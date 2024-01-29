@@ -1,0 +1,19 @@
+#!/usr/bin/bash
+if [[ `ls -aF |grep /|tr "/" " " |grep "$1 "` = "$1 "  ]]
+then 
+if [[ ${1:0:1} = '_' ]]
+then
+result=`echo $1|tr "_" " "`;
+echo "_${result:1} database is already exist!";
+fi
+else
+mkdir $1 
+if [[ ${1:0:1} = '_' ]]
+then
+result=`echo $1|tr "_" " "`;
+echo "_${result:1} database created successfully";
+else
+echo "`echo $1|tr "_" " "` database created successfully";
+fi
+fi
+

@@ -1,0 +1,45 @@
+#!/usr/bin/bash
+# I love linux and i hate windows
+if ( [ -z $(ls -aF |grep .db) ] )
+then
+mkdir .db
+cd .db
+else
+cd .db
+fi
+select com in "Create database" "List databases" "Remove database" "Connect to database" "exit"
+do
+case $REPLY in 
+1)
+read -p "enter database name to be created " databse_name
+case `db_naming_constraint $databse_name` in
+"0" )
+echo "database name shouldn't start with numbers"
+;;
+"1" )
+echo "database name shouldn't contain special characters"
+;;
+"2" )
+create_db `echo $databse_name|tr " " "_"`;
+;;
+esac 
+;;
+2)
+ls_db;
+;;
+3)
+read -p "enter database name to be removed " databse_name
+rm_db `echo $databse_name|tr " " "_"`;
+;;
+4)
+read -p "enter database name connect to " databse_name
+. connect_db `echo $databse_name|tr " " "_"`;
+;;
+5)
+break;
+;;
+*)
+echo "$REPLY is invalid selection number";
+;;
+esac
+done
