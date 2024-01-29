@@ -1,7 +1,10 @@
 #!/usr/bin/bash
 shopt -s extglob
 chech_DB_naming () {
-if [[ "$1" =~ ^[0-9] ]];
+if [ -z $1 ]
+then
+result=3;
+elif [[ $1 =~ ^[0-9] ]];
 then 
 result=0;
 elif [[ $1 =~ ^[A-Za-z_]+ ]] && [[ $1 =~ ^[A-Za-z_0-9]*$ ]];
