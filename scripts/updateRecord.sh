@@ -1,75 +1,83 @@
-column -t -s ';' ./mydb/testing/test
-
-echo -e $" - Please enter a search value to select record(s): \c"
-read value
-
-echo echo $'<====================>\n'
-# find the pattern in records |> for all fields |> as a table display
-awk -v pat=$value '$0~pat{print $0}' ./mydb/testing/test | column -t -s ';'
-
-echo -e $" - Please specify field number: \c"
-read field
-
-awk -v pat=$value $'$0~pat{print $0\n}' ./mydb/testing/test | cut -f$field -d";"
-
-findex=$(awk -v pat=$value $'$0~pat{print $0\n}' ./mydb/testing/test | cut -f$field -d";")
-
-echo $findex
+. ./scripts/listTable.sh $database
 
 function updateRecord {
 
-	echo -e " - Enter Table Name: \c"
-	read table
+	while true; do
 
-	awk 'BEGIN{FS=";"}{if (NR==1) {for(i=1;i<=NF;i++){printf "--|--"$i}{print "--|"}}}' ./mydb/$database/$table
+		echo -e $' - Please enter table name to update: \c'
+		read table_name
 
-	echo ' - Enter Column name: \c'
-	read field
+		table_name=$(echo $table_name | tr ' ' '_') #^ to replace the space with _
 
-	findex=$(
-		awk 'BEGIN{FS=";"}{
-			if(NR==1){
-				for(i=1;i<=NF;i++){
-					if( $i == $field ) 
-					print i 
-					echo $i
-				}
-			}
-		}' ./mydb/$database/$table
-	)
+		#? Validating table name
+		if [[ -f ./mydb/$database/$table_name ]]; then
 
-	echo $findex
-	pwd
-	if [[ -z $findex ]]; then
-		echo " << Not Found >> "
-		. ./scripts/tablesOperation.sh ./mydb/$databasu
-	else
-		echo -e" - Enter Value: \c"
-		read value
-		result=$(
-			awk 'BEGIN{FS=";"}{
-				if ($'$findex'=="'$value'") 
-				print $'$findex'}
-				' ./mydb/$database/$table 2 >>/dev/null
-		)
+			echo $'<------------------------------->\n'
+			# find the pattern in records |> for all fields |> as a table display
+			column -t -s ';' ./mydb/$database/$table_name
+			echo $'<------------------------------->\n'
 
-		echo $result
-		pwd
-		if [[ -z $result ]]; then
-			echo "Value Not Found"
-			. ./scripts/tablesOperation.sh ./mydb/$database
+			echo -e $" - Please enter the value that want to change: \c"
+			read value
+
+			echo -e $" - Please specify field number: \c"
+			read field
+
+			findex=$(awk -v pat=$value $'$0~pat{print $0\n}' ./mydb/$database/$table_name | cut -f$field -d";" 2>>/dev/null)
+
+			if [[ $findex > =1 ]]; then
+				changeData
+				echo $'<------------------------------->\n'
+				# find the pattern in records |> for all fields |> as a table display
+				column -t -s ';' ./mydb/$database/$table_name
+				echo $'<------------------------------->\n'
+				. ./scripts/tablesOperation.sh $database
+
+			else
+				echo '-----------------------------------------'
+				echo " << False inputs not found >> "
+				echo '-----------------------------------------'
+				. ./scripts/tablesOperation.sh $database
+			fi
+
 		else
-			echo "Enter new Value to set:"
-			read newValue
-			NR=$(awk 'BEGIN{FS=";"}{if ($'$findex' == "'$value'") print NR}' ./mydb/$database/$table 2>>/dev/null)
-			echo $NR
-			oldValue=$(awk 'BEGIN{FS=";"}{if(NR=='$NR'){for(i=1;i<=NF;i++){if(i=='$findex') print $i}}}' ./mydb/$database/$table 2>>/dev/null)
-			echo $oldValue
-			sed -i ''$NR's/'$oldValue'/'$newValue'/g' ./mydb/$database/$table 2>>/dev/null
-			echo "Row Updated Successfully"
-			./scripts/tablesOperation.sh $database
+			echo " << Table doesn't exist >>"
+			echo -e $" - Do you want to create it? [y/n]: \c"
+			read answer
+
+			case $answer in
+			y)
+				. ./scripts/createTable.sh $database
+				;;
+			n)
+				. ./scripts/tableOperation.sh $database
+				;;
+			*)
+				echo " << Incorrect answer. Redirecting to main menu.. >> "
+				sleep 2
+				cd ..
+				./startView.sh
+				;;
+			esac
 		fi
+	done
+
+}
+
+function changeData() {
+
+	echo -e " - Enter new Value to set: \c"
+	read newValue
+
+	oldValue=$(awk -v pat=$value $'$0~pat{print $0\n}' ./mydb/$database/$table_name | cut -f$field -d";" 2>>/dev/null)
+
+	sed -i 's/'$oldValue'/'$newValue'/g' ./mydb/$database/$table_name 2>>/dev/null
+
+	if [[ '$oldValue' == '$newValue' ]]; then #Status Last Command (0-->last Command Run Sucessfuly)
+		return 0
+	else
+		return 1
 	fi
 }
 
-#updateRecord
+updateRecord
