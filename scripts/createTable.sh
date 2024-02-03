@@ -104,10 +104,10 @@ function create_column() {
                     read datatype
 
                     case $datatype in
-                    int)
+                    [iI][nN][tT]))
                         echo -n $col_name"($datatype);" >>./mydb/$database/$table_name
                         ;;
-                    string)
+                    [sS][tT][rR][Ii][nN][gG])
                         echo -n $col_name"($datatype);" >>./mydb/$database/$table_name
                         ;;
                     *)
@@ -119,6 +119,13 @@ function create_column() {
                     esac
                     break
                 done
+                if [ $flag == "true" ] && [[ $i = $fields_num ]]
+                then
+                echo '-----------------------------------------'
+                echo "<< table should contain PK >>"
+                i=0;
+                echo "" >./mydb/$database/$table_name
+                fi
             done
 
             echo $'\n' >>./mydb/$database/$table_name #end of table header

@@ -27,9 +27,12 @@ function updateRecord {
 
 			if [[ $findex > =1 ]]; then
 				changeData
+				echo -e $" << That Your table after update >> "
 				echo $'<------------------------------->\n'
 				# find the pattern in records |> for all fields |> as a table display
 				column -t -s ';' ./mydb/$database/$table_name
+				echo $'<------------------------------->\n'
+
 				echo $'<------------------------------->\n'
 				. ./scripts/tablesOperation.sh $database
 
@@ -72,7 +75,7 @@ function changeData() {
 	oldValue=$(awk -v pat=$value $'$0~pat{print $0\n}' ./mydb/$database/$table_name | cut -f$field -d";" 2>>/dev/null)
 
 	sed -i 's/'$oldValue'/'$newValue'/g' ./mydb/$database/$table_name 2>>/dev/null
-
+	echo " << Your table   >> "
 	if [[ '$oldValue' == '$newValue' ]]; then #Status Last Command (0-->last Command Run Sucessfuly)
 		return 0
 	else
