@@ -1,17 +1,26 @@
-#!/usr/bin/bash
+#! /usr/bin/bash
 
 # Get the path of the script itself
 parentDir="$(dirname "$0")"
 
-# echo "PATH=$PATH:$parentDir" >>~/.bashrc
+echo "PATH=$PATH:$parentDir" >>~/.bashrc
 cd $parentDir
 
+if [[ -d $parentDir/mydb ]]; then
+echo "-----------------------------"
+	echo " << Your Directory for Database already Exit : >> "
+else
+echo "-----------------------------"
+	echo " << Your Directory for Database created done >> "
+	mkdir /mydb
+fi
+
 # Choosing an option
-PS3=' - Choose an option >> '
+PS3='> Main < Choose an option >> '
 
 echo "-----------------------------"
-echo $'\n << Welcome to our DBMS >> \n'
-echo $' << We love linux ^_^  >> \n'
+echo $'\n << Welcome to our DBMS >>\n'
+echo $' << We love linux ^_^  >>\n'
 
 select menu in 'Create DB' 'List DB' 'Connect To DB' 'Drop DB' 'Exit'; do
 	case $menu in
@@ -22,11 +31,9 @@ select menu in 'Create DB' 'List DB' 'Connect To DB' 'Drop DB' 'Exit'; do
 		. ./scripts/listDB.sh
 		;;
 	'Connect To DB')
-		. ./scripts/listDB.sh
 		. ./scripts/connectDB.sh
 		;;
 	'Drop DB')
-		. ./scripts/listDB.sh
 		. ./scripts/dropDB.sh
 		;;
 	'Exit')
@@ -37,7 +44,7 @@ select menu in 'Create DB' 'List DB' 'Connect To DB' 'Drop DB' 'Exit'; do
 		echo "-----------------------------"
 		echo " << Not valid option choice! >> "
 		echo "-----------------------------"
-		./startView.sh
+		. ./startView.sh
 		;;
 	esac
 done

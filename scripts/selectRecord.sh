@@ -1,7 +1,6 @@
 function selectRecord {
-
 	. ./scripts/listTable.sh $database
-
+	
 	echo -e " - Please enter table name to select data: \c"
 	read table_name
 
@@ -86,7 +85,6 @@ function selectRecord {
 		else
 			echo $'Invalid choice\n'
 			echo " << Redirecting to main menu.. >> "
-			cd ../
 			sleep 2
 			./startView.sh
 		fi
@@ -105,7 +103,7 @@ function selectRecord {
 		*)
 			echo " << Incorrect answer. Redirecting to main menu.. >> "
 			sleep 2
-			cd ..
+			pwd
 			./startView.sh
 			;;
 		esac

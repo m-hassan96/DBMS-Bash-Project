@@ -24,7 +24,6 @@ function insertRecord() {
 			fi
 		done
 		echo $'\n' >>./mydb/$database/$table_name #end of record
-		echo $'<------------------------------->\n'
 		echo " << insert done into $table_name >>"
 		echo $'<------------------------------->\n'
 
@@ -62,7 +61,7 @@ function checkType() {
 	if [[ "$datatype" == *"int"* ]]; then
 		num='^[0-9]+$'
 		if ! [[ $2 =~ $num ]]; then
-			echo " << False input: Not a number! >> "
+			echo "\n << False input: Not a number! >> "
 			return 1
 		else
 			checkPK $1 $2  # to call  checkPK function 

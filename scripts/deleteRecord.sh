@@ -26,10 +26,11 @@ function deleteRecord {
 
 		echo -e $" - Please specify field number: \c"
 		read field
+
 		NR=$(awk 'BEGIN{FS=";"}{
 				if ($'$field'=="'$value'") 
 					print NR
-				}' ./mydb/testing/test 2>>/dev/null)
+				}' ./mydb/$database/$table_name 2>>/dev/null)
 
 		# To delete the Row
 		sed -i ''$NR'd' ./mydb/$database/$table_name 2>>/dev/null
@@ -37,8 +38,10 @@ function deleteRecord {
 		#To print the new table
 		echo $'-----------------------------\t'
 		echo " << Your table  $table_name after delete this row >> "
-
+		echo $'-----------------------------\t'
 		column -t -s ';' ./mydb/$database/$table_name
+		echo $'\t'
+		
 		echo " << Row  Deleted Successfully >> "
 
 		. ./scripts/tablesOperation.sh $database
@@ -57,7 +60,6 @@ function deleteRecord {
 		*)
 			echo " << Incorrect answer. Redirecting to main menu.. >> "
 			sleep 2
-			cd ..
 			./startView.sh
 			;;
 		esac
